@@ -1,2 +1,2 @@
-# webmetrics
-collect user project data
+# WebMetrics
+collect user project data and display to user
