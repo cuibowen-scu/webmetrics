@@ -9,5 +9,8 @@
         <module name="webmetrics" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="webmetrics" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
