@@ -1,6 +1,6 @@
 package com.cbw.webmetrics.utils;
 
-import com.cbw.webmetrics.Config.Config;
+import com.cbw.webmetrics.config.Config;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.BufferedReader;

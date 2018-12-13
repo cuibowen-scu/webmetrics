@@ -1,4 +1,4 @@
-package com.cbw.webmetrics.Config;
+package com.cbw.webmetrics.config;
 
 /**
  * System constant

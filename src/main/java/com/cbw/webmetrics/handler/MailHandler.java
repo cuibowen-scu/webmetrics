@@ -1,6 +1,6 @@
 package com.cbw.webmetrics.handler;
 
-import com.cbw.webmetrics.Config.Config;
+import com.cbw.webmetrics.config.Config;
 
 import javax.mail.Session;
 import javax.mail.Transport;
