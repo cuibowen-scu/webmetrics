@@ -1,6 +1,7 @@
 package com.cbw.webmetrics.handler;
 
-import com.cbw.webmetrics.beans.ServerPerformanceBean;
+import com.cbw.webmetrics.beans.db.ServerPerformanceBean;
+import com.cbw.webmetrics.beans.db.UserProjectBean;
 import com.cbw.webmetrics.utils.DBUtil;
 import com.cbw.webmetrics.utils.DateUtil;
 import com.sun.management.OperatingSystemMXBean;
@@ -36,8 +37,7 @@ public class ServerHandler {
             TimerTask coreTask = new TimerTask() {
                 @Override
                 public void run() {
-                    ServerPerformanceBean serverPerformanceBean = getSystemPerformance(Integer.parseInt(projectId));
-                    DBUtil.saveSysPerformanceToDB(serverPerformanceBean);
+                    checkServerPerformanceAndWarn(Integer.parseInt(projectId));
                 }
             };
             scheduler.scheduleAtFixedRate(coreTask, 1, 1, TimeUnit.MINUTES);
@@ -53,13 +53,51 @@ public class ServerHandler {
      * @param projectId
      * @return
      */
-    private static ServerPerformanceBean getSystemPerformance(int projectId) {
+    private static void checkServerPerformanceAndWarn(int projectId) {
         String timeMin = DateUtil.getUserTimeMin();
         double cpuUsage = getCpuUsage();
         double memUsage = getMemUsage();
         double diskUsage = getDiskUsage();
-        ServerPerformanceBean serverPerformanceBean = new ServerPerformanceBean(projectId, timeMin, cpuUsage, memUsage, diskUsage);
-        return serverPerformanceBean;
+
+        UserProjectBean userProjectBean = DBUtil.getUserProjectInfo(projectId);
+        ServerPerformanceBean serverPerformanceBean = new ServerPerformanceBean(projectId, timeMin, userProjectBean.getIfCpuNeedWarn(),
+                userProjectBean.getIfMemNeedWarn(), userProjectBean.getIfDiskNeedWarn(), userProjectBean.getCpuWarnNum(),
+                userProjectBean.getMemWarnNum(), userProjectBean.getDiskWarnNum(), cpuUsage, memUsage, diskUsage);
+
+        if ("no".equals(serverPerformanceBean.getIfCpuNeedWarn())) {
+            serverPerformanceBean.setIfCpuWarned("no");
+        } else {
+            serverPerformanceBean.setIfCpuWarned(cpuUsage > serverPerformanceBean.getCpuWarnNum() ? "yes" : "no");
+        }
+        if ("no".equals(serverPerformanceBean.getIfMemNeedWarn())) {
+            serverPerformanceBean.setIfMemWarned("no");
+        } else {
+            serverPerformanceBean.setIfMemWarned(memUsage > serverPerformanceBean.getMemWarnNum() ? "yes" : "no");
+        }
+        if ("no".equals(serverPerformanceBean.getIfDiskNeedWarn())) {
+            serverPerformanceBean.setIfDiskWarned("no");
+        } else {
+            serverPerformanceBean.setIfDiskWarned(diskUsage > serverPerformanceBean.getDiskWarnNum() ? "yes" : "no");
+        }
+
+        checkServerWarn(userProjectBean, serverPerformanceBean);
+        DBUtil.saveSysPerformanceToDB(serverPerformanceBean, userProjectBean);
+    }
+
+    /**
+     * check if need warn and warn work
+     *
+     * @param userProjectBean
+     * @param serverPerformanceBean
+     */
+    private static void checkServerWarn(UserProjectBean userProjectBean, ServerPerformanceBean serverPerformanceBean) {
+        if ("yes".equals(serverPerformanceBean.getIfCpuWarned()) || "yes".equals(serverPerformanceBean.getIfMemWarned()) || "yes".equals(serverPerformanceBean.getIfDiskWarned())) {
+            String phone = userProjectBean.getPhone();
+            String email = DBUtil.getUserInfoByPhone(phone);
+            String message = "<<<<" + serverPerformanceBean.toString() + " >>>>";
+            MessageHandler.sendMessage(phone, message);
+            MailHandler.sendEmail(email, message);
+        }
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.cbw.webmetrics.beans;
+package com.cbw.webmetrics.beans.db;
 
 /**
  * the class is design to store user timecost table info
@@ -11,8 +11,11 @@ public class TimeCostBean {
     private long startNanoTime;
     private String startUserTime;
     private long endNanoTime;
+
+    private String ifCostNeedWarn;
+    private int costWarnNum;
     private int cost;
-    private String ifWarning;
+    private String ifWarned;
 
     public TimeCostBean(int projectId, int methodId, String className, String methodName, long startNanoTime, String startUserTime) {
         this.projectId = projectId;
@@ -23,7 +26,7 @@ public class TimeCostBean {
         this.startUserTime = startUserTime;
     }
 
-    public TimeCostBean(int projectId, int methodId, String className, String methodName, long startNanoTime, String startUserTime, long endNanoTime, int cost) {
+    public TimeCostBean(int projectId, int methodId, String className, String methodName, long startNanoTime, String startUserTime, long endNanoTime, String ifCostNeedWarn, int costWarnNum, int cost, String ifWarned) {
         this.projectId = projectId;
         this.methodId = methodId;
         this.className = className;
@@ -31,19 +34,13 @@ public class TimeCostBean {
         this.startNanoTime = startNanoTime;
         this.startUserTime = startUserTime;
         this.endNanoTime = endNanoTime;
+        this.ifCostNeedWarn = ifCostNeedWarn;
+        this.costWarnNum = costWarnNum;
         this.cost = cost;
+        this.ifWarned = ifWarned;
     }
 
-    public TimeCostBean(int projectId, int methodId, String className, String methodName, long startNanoTime, String startUserTime, long endNanoTime, int cost, String ifWarning) {
-        this.projectId = projectId;
-        this.methodId = methodId;
-        this.className = className;
-        this.methodName = methodName;
-        this.startNanoTime = startNanoTime;
-        this.startUserTime = startUserTime;
-        this.endNanoTime = endNanoTime;
-        this.cost = cost;
-        this.ifWarning = ifWarning;
+    public TimeCostBean() {
     }
 
     public int getProjectId() {
@@ -102,6 +99,22 @@ public class TimeCostBean {
         this.endNanoTime = endNanoTime;
     }
 
+    public String getIfCostNeedWarn() {
+        return ifCostNeedWarn;
+    }
+
+    public void setIfCostNeedWarn(String ifCostNeedWarn) {
+        this.ifCostNeedWarn = ifCostNeedWarn;
+    }
+
+    public int getCostWarnNum() {
+        return costWarnNum;
+    }
+
+    public void setCostWarnNum(int costWarnNum) {
+        this.costWarnNum = costWarnNum;
+    }
+
     public int getCost() {
         return cost;
     }
@@ -110,12 +123,12 @@ public class TimeCostBean {
         this.cost = cost;
     }
 
-    public String getIfWarning() {
-        return ifWarning;
+    public String getIfWarned() {
+        return ifWarned;
     }
 
-    public void setIfWarning(String ifWarning) {
-        this.ifWarning = ifWarning;
+    public void setIfWarned(String ifWarned) {
+        this.ifWarned = ifWarned;
     }
 
     @Override
@@ -128,8 +141,10 @@ public class TimeCostBean {
                 ", startNanoTime=" + startNanoTime +
                 ", startUserTime='" + startUserTime + '\'' +
                 ", endNanoTime=" + endNanoTime +
+                ", ifCostNeedWarn='" + ifCostNeedWarn + '\'' +
+                ", costWarnNum=" + costWarnNum +
                 ", cost=" + cost +
-                ", ifWarning='" + ifWarning + '\'' +
+                ", ifWarned='" + ifWarned + '\'' +
                 '}';
     }
 }

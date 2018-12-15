@@ -1,7 +1,8 @@
 package com.cbw.webmetrics.agent;
 
-import com.cbw.webmetrics.beans.MethodBean;
+import com.cbw.webmetrics.beans.other.MethodBean;
 import com.cbw.webmetrics.handler.ServerHandler;
+import com.cbw.webmetrics.utils.DBUtil;
 import com.cbw.webmetrics.utils.JsonUtil;
 import com.cbw.webmetrics.utils.PropsUtil;
 import javassist.ClassPool;
@@ -23,7 +24,7 @@ public class Agent implements ClassFileTransformer {
 
     private static Properties props = PropsUtil.getProps();
 
-    private static volatile AtomicInteger sysTime = new AtomicInteger(0);
+    private static volatile AtomicInteger sysTime = new AtomicInteger(1);
 
     /**
      * the interrupt main method
@@ -34,7 +35,7 @@ public class Agent implements ClassFileTransformer {
             sysTime.incrementAndGet();
             ServerHandler.handle(props.getProperty("projectId"));
         }
-        Map<String, List<MethodBean>> methodsMap = getAllMethods(props.getProperty("methods"));
+        Map<String, List<MethodBean>> methodsMap = getAllMethods(DBUtil.getMethodsJson(Integer.parseInt(props.getProperty("projectId"))));
         className = className.replace("/", ".");
         if (methodsMap.containsKey(className)) {
             List<MethodBean> methods = methodsMap.get(className);

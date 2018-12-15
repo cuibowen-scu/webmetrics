@@ -1,4 +1,4 @@
-package com.cbw.webmetrics.beans;
+package com.cbw.webmetrics.beans.other;
 
 /**
  * the method bean, methodId is the id from our website that the user offer us, methodName is user project method name

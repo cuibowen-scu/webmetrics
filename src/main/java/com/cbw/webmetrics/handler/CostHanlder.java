@@ -1,7 +1,10 @@
 package com.cbw.webmetrics.handler;
 
-import com.cbw.webmetrics.beans.TimeCostBean;
+import com.cbw.webmetrics.beans.db.CostMethodBean;
+import com.cbw.webmetrics.beans.db.TimeCostBean;
+import com.cbw.webmetrics.beans.db.UserProjectBean;
 import com.cbw.webmetrics.utils.CommonUtil;
+import com.cbw.webmetrics.utils.DBUtil;
 import com.cbw.webmetrics.utils.DateUtil;
 import com.cbw.webmetrics.utils.PropsUtil;
 
@@ -14,7 +17,7 @@ import java.util.Properties;
 public class CostHanlder {
 
     private static Properties props = PropsUtil.getProps();
-    private static Map<String, Integer> methodIdMap = CommonUtil.getMethodIdMap(props.getProperty("methods"));
+    private static Map<String, Integer> methodIdMap = CommonUtil.getMethodIdMap(DBUtil.getMethodsJson(Integer.parseInt(props.getProperty("projectId"))));
 
     /**
      * return the costBean before user method start
@@ -30,11 +33,41 @@ public class CostHanlder {
     /**
      * return the costBean after user method finished
      */
-    public static TimeCostBean getEndCostBean(TimeCostBean oldCostBean) {
+    public static void processCost(TimeCostBean costBean) {
         long endNanoTime = DateUtil.getNanoTime();
-        int cost = (int) ((endNanoTime - oldCostBean.getStartNanoTime()) / 1000000);  //ms
-        oldCostBean.setEndNanoTime(endNanoTime);
-        oldCostBean.setCost(cost);
-        return oldCostBean;
+        int cost = (int) ((endNanoTime - costBean.getStartNanoTime()) / 1000000);  //ms
+
+        UserProjectBean userProjectInfo = DBUtil.getUserProjectInfo(costBean.getProjectId());
+        CostMethodBean costMethodBean = DBUtil.getCostMethodInfo(costBean.getProjectId(), costBean.getMethodId());
+
+        costBean.setEndNanoTime(endNanoTime);
+        costBean.setCost(cost);
+        costBean.setIfCostNeedWarn(costMethodBean.getIfCostNeedWarn());
+        costBean.setCostWarnNum(costMethodBean.getCostWarnNum());
+
+        if ("no".equals(costBean.getIfCostNeedWarn())) {
+            costBean.setIfWarned("no");
+        } else {
+            costBean.setIfWarned(cost > costBean.getCostWarnNum() ? "yes" : "no");
+        }
+
+        checkCostWarn(userProjectInfo, costBean);
+        DBUtil.saveTimeCostToDB(costBean, userProjectInfo);
+    }
+
+    /**
+     * check if need warn and warn work
+     *
+     * @param userProjectInfo
+     * @param costBean
+     */
+    private static void checkCostWarn(UserProjectBean userProjectInfo, TimeCostBean costBean) {
+        if ("yes".equals(costBean.getIfWarned())) {
+            String phone = userProjectInfo.getPhone();
+            String email = DBUtil.getUserInfoByPhone(phone);
+            String message = "<<<<" + costBean.toString() + " >>>>";
+            MessageHandler.sendMessage(phone, message);
+            MailHandler.sendEmail(email, message);
+        }
     }
 }

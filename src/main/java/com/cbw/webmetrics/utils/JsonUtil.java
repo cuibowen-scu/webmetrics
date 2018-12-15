@@ -1,6 +1,6 @@
 package com.cbw.webmetrics.utils;
 
-import com.cbw.webmetrics.beans.MethodBean;
+import com.cbw.webmetrics.beans.other.MethodBean;
 import com.google.gson.*;
 
 import java.util.ArrayList;
@@ -28,9 +28,9 @@ public class JsonUtil {
             for (JsonElement method : jsonArray) {
                 String methodJson = method.toString();
                 Map<String, String> jsonMap = gson.fromJson(methodJson, Map.class);
-                String className = jsonMap.get("class");
+                String className = jsonMap.get("method_class");
                 List<MethodBean> list = methodsMap.getOrDefault(className, new ArrayList<>());
-                list.add(new MethodBean(Integer.parseInt(jsonMap.get("id")), jsonMap.get("name")));
+                list.add(new MethodBean(Integer.parseInt(jsonMap.get("method_id")), jsonMap.get("method_name")));
                 methodsMap.put(className, list);
             }
         } catch (Exception e) {
@@ -51,7 +51,7 @@ public class JsonUtil {
             for (JsonElement method : jsonArray) {
                 String methodJson = method.toString();
                 Map<String, String> jsonMap = gson.fromJson(methodJson, Map.class);
-                methodIdMap.put(CommonUtil.buildMKey(jsonMap.get("class"), jsonMap.get("name")), Integer.parseInt(jsonMap.get("id")));
+                methodIdMap.put(CommonUtil.buildMKey(jsonMap.get("method_class"), jsonMap.get("method_name")), Integer.parseInt(jsonMap.get("method_id")));
             }
         } catch (Exception e) {
             e.printStackTrace();

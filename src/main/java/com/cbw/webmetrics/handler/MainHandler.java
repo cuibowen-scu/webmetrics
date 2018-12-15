@@ -1,6 +1,6 @@
 package com.cbw.webmetrics.handler;
 
-import com.cbw.webmetrics.beans.TimeCostBean;
+import com.cbw.webmetrics.beans.db.TimeCostBean;
 import com.cbw.webmetrics.utils.CommonUtil;
 import com.cbw.webmetrics.utils.DBUtil;
 import com.cbw.webmetrics.utils.PropsUtil;
@@ -15,7 +15,7 @@ import java.util.Properties;
 public class MainHandler {
 
     private static Properties props = PropsUtil.getProps();
-    private static Map<String, Integer> methodIdMap = CommonUtil.getMethodIdMap(props.getProperty("methods"));
+    private static Map<String, Integer> methodIdMap = CommonUtil.getMethodIdMap(DBUtil.getMethodsJson(Integer.parseInt(props.getProperty("projectId"))));
     private static Map<String, TimeCostBean> costCache = new HashMap<>();
 
     /**
@@ -33,7 +33,6 @@ public class MainHandler {
     public static void after(String className, String methodName) {
         // after user method finished, the cost part, get the time info from the cache, calculate time cost, then store to DB
         TimeCostBean oldCostBean = costCache.get(CommonUtil.buildCostCacheKey(Integer.parseInt(props.getProperty("projectId")), methodIdMap.get(CommonUtil.buildMKey(className, methodName))));
-        TimeCostBean newCostBean = CostHanlder.getEndCostBean(oldCostBean);
-        DBUtil.saveTimeCostToDB(newCostBean);
+        CostHanlder.processCost(oldCostBean);
     }
 }
