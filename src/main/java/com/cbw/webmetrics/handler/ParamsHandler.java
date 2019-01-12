@@ -14,8 +14,6 @@ import java.util.Properties;
  */
 public class ParamsHandler {
 
-    private static Properties props = PropsUtil.getProps();
-
     /**
      * the entrance method, max 4096 bytes
      */
@@ -24,7 +22,7 @@ public class ParamsHandler {
             return;
         }
         String time = DateUtil.getUserTime();
-        int projectId = Integer.parseInt(props.getProperty("projectId"));
+        int projectId = Integer.parseInt(PropsUtil.getProjectId());
         UserProjectBean userProjectInfo = DBUtil.getUserProjectInfo(projectId);
         CostMethodBean costMethodInfo = DBUtil.getCostMethodInfo(projectId, methodId);
         ParamsBean paramsBean = new ParamsBean(projectId, methodId, costMethodInfo.getMethodClass(),

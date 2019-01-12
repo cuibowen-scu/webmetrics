@@ -16,14 +16,13 @@ import java.util.Properties;
  */
 public class CostHanlder {
 
-    private static Properties props = PropsUtil.getProps();
-    private static Map<String, Integer> methodIdMap = CommonUtil.getMethodIdMap(DBUtil.getMethodsJson(Integer.parseInt(props.getProperty("projectId"))));
+    private static Map<String, Integer> methodIdMap = CommonUtil.getMethodIdMap(DBUtil.getMethodsJson(Integer.parseInt(PropsUtil.getProjectId())));
 
     /**
      * return the costBean before user method start
      */
     public static TimeCostBean getStartCostBean(String className, String methodName) {
-        int projectId = Integer.parseInt(props.getProperty("projectId"));
+        int projectId = Integer.parseInt(PropsUtil.getProjectId());
         int methodId = methodIdMap.get(CommonUtil.buildMKey(className, methodName));
         long startNanoTime = DateUtil.getNanoTime();
         String startUserTime = DateUtil.getUserTime();

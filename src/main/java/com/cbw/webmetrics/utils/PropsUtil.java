@@ -11,24 +11,13 @@ import java.util.logging.Logger;
  */
 public class PropsUtil {
 
-    private static Properties props;
-    private static String filePath = "config.cfg";
+    private static String projectId;
 
-    /**
-     * the get method
-     */
-    public static Properties getProps() {
-        props = new Properties();
-        File f = new File(filePath);
-        if (f.exists()) {
-            try {
-                props.load(new FileInputStream(filePath));
-            } catch (IOException e) {
-                Logger.getLogger("PropsUtil").warning("cannot load user config to props" + e);
-            }
-        } else {
-            System.out.println("please prepare your config doc.");
-        }
-        return props;
+    public static String getProjectId() {
+        return projectId;
+    }
+
+    public static void setProjectId(String projectId) {
+        PropsUtil.projectId = projectId;
     }
 }

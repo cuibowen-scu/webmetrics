@@ -22,8 +22,6 @@ import java.util.logging.Logger;
  */
 public class Agent implements ClassFileTransformer {
 
-    private static Properties props = PropsUtil.getProps();
-
     private static volatile AtomicInteger sysTime = new AtomicInteger(1);
 
     /**
@@ -33,9 +31,9 @@ public class Agent implements ClassFileTransformer {
         // wake the timer monitor only once when user project start-up, do not open when testing
         if (sysTime.intValue() < 1) {
             sysTime.incrementAndGet();
-            ServerHandler.handle(props.getProperty("projectId"));
+            ServerHandler.handle(PropsUtil.getProjectId());
         }
-        Map<String, List<MethodBean>> methodsMap = getAllMethods(DBUtil.getMethodsJson(Integer.parseInt(props.getProperty("projectId"))));
+        Map<String, List<MethodBean>> methodsMap = getAllMethods(DBUtil.getMethodsJson(Integer.parseInt(PropsUtil.getProjectId())));
         className = className.replace("/", ".");
         if (methodsMap.containsKey(className)) {
             List<MethodBean> methods = methodsMap.get(className);

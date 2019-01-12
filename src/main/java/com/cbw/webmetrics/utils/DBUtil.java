@@ -214,7 +214,7 @@ public class DBUtil {
                 Class.forName("com.mysql.jdbc.Driver");
                 conn = DriverManager.getConnection(Config.MY_DB_URL, Config.MY_USERNAME, Config.MY_PASSWORD);
                 statement = conn.createStatement();
-                sql = "select * from " + THIS_TABLE_NAME + " where project_id = " + projectId;
+                sql = "select * from " + THIS_TABLE_NAME + " where project_id = " + projectId + " and flag!=2";
                 ResultSet rs = statement.executeQuery(sql);
                 List<MethodSqlBean> list = new ArrayList<>();
                 while (rs.next()) {
@@ -349,7 +349,7 @@ public class DBUtil {
                 Class.forName("com.mysql.jdbc.Driver");
                 conn = DriverManager.getConnection(Config.MY_DB_URL, Config.MY_USERNAME, Config.MY_PASSWORD);
                 statement = conn.createStatement();
-                sql = "select * from " + THIS_TABLE_NAME + " where project_id = " + projectId + " and method_id = " + methodId;
+                sql = "select * from " + THIS_TABLE_NAME + " where project_id = " + projectId + " and method_id = " + methodId + " and flag!=2";
                 ResultSet rs = statement.executeQuery(sql);
                 while (rs.next()) {
                     return new CostMethodBean(rs.getInt("project_id"), rs.getInt("method_id"),
